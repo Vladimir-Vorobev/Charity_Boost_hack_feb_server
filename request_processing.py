@@ -65,6 +65,12 @@ class request_precessing():
                 return jsonify('code_time_out')
             elif user['code'] == int(data['code']):
                 users.insert_one({
+                    "name": data['name'],
+                    "number": data['number'],
+                    "certificate": data['certificate'],
+                    "phone": data['phone'],
+                    "address": data['address'],
+                    "site": data['site'],
                     "email": data['email'],
                     "password": bcrypt.hashpw(data['password'].encode(), bcrypt.gensalt(16)),
                     "avatar": '',
