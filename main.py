@@ -1,16 +1,38 @@
-# This is a sample Python script.
+from flask import Flask, make_response, request, session, copy_current_request_context
+import threading
+from server import app, sio
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from socket_processing import sp
+from request_processing import rp
+from modules import hf
 
+@app.route('/', methods = ['GET','POST'])
+def code():
+    return "Все работает"
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+@app.route('/reg-code/', methods = ['POST'])
+def reg_code():
+    return rp.reg_code(request.data)
 
+@app.route('/registration/', methods = ['POST'])
+def reg_in():
+    return rp.reg_in(request.data)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@app.route('/login/', methods = ['POST'])
+def log_in():
+    return rp.log_in(request.data)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+@app.route('/get_information/', methods = ['POST'])
+def get_information():
+    return rp.get_information(request.data)
+
+# @app.route('/user/<id>/')
+# def user_profile(id):
+#     return rp.user_profile(id)
+
+# @sio.on('smth')
+# def create_room(data):
+#     sp.do_smth(data)
+
+if __name__ == "__main__":
+    app.run()
