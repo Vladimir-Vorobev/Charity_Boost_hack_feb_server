@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 client = MongoClient("mongodb+srv://Admin:kdjhi832h!ya6@cluster0.l6quu.mongodb.net/hackaton?retryWrites=true&w=majority")
-db = client.MafiaGoDB
+db = client.hackaton
 users = db.users
 codes = db.codes
 rooms = db.rooms

@@ -6,7 +6,7 @@ from datetime import datetime
 
 from pymongo import MongoClient
 client = MongoClient("mongodb+srv://Admin:kdjhi832h!ya6@cluster0.l6quu.mongodb.net/hackaton?retryWrites=true&w=majority")
-db = client.MafiaGoDB
+db = client.hackaton
 users = db.users
 codes = db.codes
 
@@ -63,7 +63,7 @@ class request_precessing():
                     "email": data['email']
                 })
                 return jsonify('code_time_out')
-            elif user['code'] == data['code']:
+            elif user['code'] == int(data['code']):
                 users.insert_one({
                     "email": data['email'],
                     "password": bcrypt.hashpw(data['password'].encode(), bcrypt.gensalt(16)),
