@@ -38,6 +38,10 @@ def get_projects():
 def get_my_now_projects():
     return rp.get_my_now_projects(request.data)
 
+@app.route('/connect_with_admin/', methods = ['POST'])
+def connect_with_admin():
+    return rp.connect_with_admin(request.data)
+
 # @app.route('/user/<id>/')
 # def user_profile(id):
 #     return rp.user_profile(id)

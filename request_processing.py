@@ -222,6 +222,13 @@ class request_precessing():
                     res.append(user['projects']['now'][project])
             return jsonify(res)
 
+    def connect_with_admin(self, data):
+        data = dict(json.loads(data))
+        if not hf.check_session_id(data): return '310'
+        else:
+            hf.send_email(data['theme'], 'vovav2005@yandex.ru', 'Письмо от ' + data['email'] + '. ' + data['text'])
+            return jsonify("send_email")
+
     def make_user_id(self):
         user = {}
         while user != None:
