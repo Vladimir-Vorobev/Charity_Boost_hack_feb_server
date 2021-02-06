@@ -11,6 +11,8 @@ users = db.users
 codes = db.codes
 projects = db.projects
 
+cities = {}
+
 from modules import hf
 
 class request_precessing():
@@ -164,6 +166,8 @@ class request_precessing():
                 id = self.make_session_id()
                 user['projects']['now'][id] = {
                     'num': id,
+                    'category': data['category'],
+                    'type_help': data['type_help'],
                     'image': data['image'],
                     'city': data['city'],
                     'title': data['title'],
@@ -180,20 +184,30 @@ class request_precessing():
                 projects.insert_one({
                     'author': data['email'],
                     'num': id,
+                    'category': data['category'],
+                    'type_help': data['type_help'],
                     'image': data['image'],
                     'city': data['city'],
                     'title': data['title'],
                     'help': data['help'],
                     'money': data['money'],
                 })
+                if data['city'] not in cities:
+                    cities[data['city']] = 1
+                else:
+                    cities[data['city']] += 1
                 return jsonify('OK')
 
-    def get_projects(self):
+    def get_projects(self, data):
+        data = dict(json.loads(data))
         res = []
-        for project in projects.find():
+        for project in projects.find(data):
             del project['_id']
             res.append(project)
-        return jsonify(res)
+        res_cities = ['Все города']
+        for city in cities:
+            if city != 'Все города': res_cities.append(city)
+        return jsonify([res, res_cities])
 
     def get_my_now_projects(self, data):
         data = dict(json.loads(data))
@@ -233,5 +247,12 @@ class request_precessing():
                 "session_id": result
             })
         return result
+
+    def reload_cities(self):
+        for city in projects.find():
+            if city['city'] not in cities:
+                cities[city['city']] = 1
+            else:
+                cities[city['city']] += 1
 
 rp = request_precessing()

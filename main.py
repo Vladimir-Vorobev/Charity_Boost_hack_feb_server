@@ -30,9 +30,9 @@ def get_information():
 def add_project():
     return rp.add_project(request.data)
 
-@app.route('/get_projects/', methods = ['GET'])
+@app.route('/get_projects/', methods = ['POST'])
 def get_projects():
-    return rp.get_projects()
+    return rp.get_projects(request.data)
 
 @app.route('/get_my_now_projects/', methods = ['POST'])
 def get_my_now_projects():
@@ -47,4 +47,5 @@ def get_my_now_projects():
 #     sp.do_smth(data)
 
 if __name__ == "__main__":
+    rp.reload_cities()
     app.run()
