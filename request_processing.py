@@ -9,6 +9,7 @@ client = MongoClient("mongodb+srv://Admin:kdjhi832h!ya6@cluster0.l6quu.mongodb.n
 db = client.hackaton
 users = db.users
 codes = db.codes
+projects = db.projects
 
 from modules import hf
 
@@ -64,28 +65,50 @@ class request_precessing():
                 })
                 return jsonify('code_time_out')
             elif user['code'] == int(data['code']):
-                users.insert_one({
-                    "name": data['name'],
-                    "number": data['number'],
-                    "certificate": data['certificate'],
-                    "phone": data['phone'],
-                    "address": data['address'],
-                    "site": data['site'],
-                    "email": data['email'],
-                    "password": bcrypt.hashpw(data['password'].encode(), bcrypt.gensalt(16)),
-                    "avatar": '',
-                    "role": 'user',
-                    "user_id": self.make_user_id(),
-                    "session_id": bcrypt.hashpw(self.make_session_id().encode(), bcrypt.gensalt(16)),
-                    "chats": {},
-                    "banned": False,
-                    "ban_time": [],
-                    "ban_reason": '',
-                })
-                codes.delete_one({
-                    "email": data['email']
-                })
-                return jsonify("reg_in")
+                if data['role'] == 'fund':
+                    users.insert_one({
+                        "name": data['name'],
+                        "number": data['number'],
+                        "certificate": data['certificate'],
+                        "phone": data['phone'],
+                        "address": data['address'],
+                        "site": data['site'],
+                        "email": data['email'],
+                        "password": bcrypt.hashpw(data['password'].encode(), bcrypt.gensalt(16)),
+                        "avatar": '',
+                        "role": 'fund',
+                        "user_id": self.make_user_id(),
+                        "session_id": bcrypt.hashpw(self.make_session_id().encode(), bcrypt.gensalt(16)),
+                        "projects": {'now': {}, 'archive': {}},
+                        "banned": False,
+                        "ban_time": [],
+                        "ban_reason": '',
+                    })
+                    codes.delete_one({
+                        "email": data['email']
+                    })
+                    return jsonify("reg_in")
+
+                elif data['role'] == 'business':
+                    users.insert_one({
+                        "name": data['name'],
+                        "full_name_responsible_person": data['full_name_responsible_person'],
+                        "phone": data['phone'],
+                        "email": data['email'],
+                        "password": bcrypt.hashpw(data['password'].encode(), bcrypt.gensalt(16)),
+                        "avatar": '',
+                        "role": 'business',
+                        "user_id": self.make_user_id(),
+                        "session_id": bcrypt.hashpw(self.make_session_id().encode(), bcrypt.gensalt(16)),
+                        "projects": {},
+                        "banned": False,
+                        "ban_time": [],
+                        "ban_reason": '',
+                    })
+                    codes.delete_one({
+                        "email": data['email']
+                    })
+                    return jsonify("reg_in")
             else:
                 return jsonify("incorrect_code")
 
@@ -128,6 +151,62 @@ class request_precessing():
             del user['ban_reason']
             del user['session_id']
             return jsonify(user)
+
+    def add_project(self, data):
+        data = dict(json.loads(data))
+        if not hf.check_session_id(data): return '310'
+        else:
+            user = users.find_one({
+                "email": data['email']
+            })
+            if user['role'] != 'fund': return 310
+            else:
+                id = self.make_session_id()
+                user['projects']['now'][id] = {
+                    'num': id,
+                    'image': data['image'],
+                    'city': data['city'],
+                    'title': data['title'],
+                    'help': data['help'],
+                    'money': data['money'],
+                    'helpers': [],
+                }
+                users.update_one(
+                    {"email": data['email']},
+                    {"$set":
+                         {"projects": user['projects']}
+                     }
+                )
+                projects.insert_one({
+                    'author': data['email'],
+                    'num': id,
+                    'image': data['image'],
+                    'city': data['city'],
+                    'title': data['title'],
+                    'help': data['help'],
+                    'money': data['money'],
+                })
+                return jsonify('OK')
+
+    def get_projects(self):
+        res = []
+        for project in projects.find():
+            del project['_id']
+            res.append(project)
+        return jsonify(res)
+
+    def get_my_now_projects(self, data):
+        data = dict(json.loads(data))
+        if not hf.check_session_id(data): return '310'
+        else:
+            res = []
+            user = users.find_one({
+                "email": data['email']
+            })
+            if user['role'] == 'fund':
+                for project in user['projects']['now']:
+                    res.append(user['projects']['now'][project])
+            return jsonify(res)
 
     def make_user_id(self):
         user = {}

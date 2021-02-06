@@ -26,6 +26,18 @@ def log_in():
 def get_information():
     return rp.get_information(request.data)
 
+@app.route('/add_project/', methods = ['POST'])
+def add_project():
+    return rp.add_project(request.data)
+
+@app.route('/get_projects/', methods = ['GET'])
+def get_projects():
+    return rp.get_projects()
+
+@app.route('/get_my_now_projects/', methods = ['POST'])
+def get_my_now_projects():
+    return rp.get_my_now_projects(request.data)
+
 # @app.route('/user/<id>/')
 # def user_profile(id):
 #     return rp.user_profile(id)
