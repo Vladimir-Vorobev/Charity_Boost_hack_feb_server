@@ -66,6 +66,11 @@ def read_message(data):
 def delete_chat(data):
     sp.delete_chat(data)
 
+@sio.on('new_sid')
+def new_sid(data):
+    data['sid'] = request.sid
+    sp.new_sid(data)
+
 if __name__ == "__main__":
     rp.reload_cities()
     app.run()
