@@ -46,9 +46,25 @@ def connect_with_admin():
 # def user_profile(id):
 #     return rp.user_profile(id)
 
-# @sio.on('smth')
-# def create_room(data):
-#     sp.do_smth(data)
+@sio.on('create_chat')
+def create_chat(data):
+    sp.create_chat(data)
+
+@sio.on('get_chat')
+def get_chat(data):
+    sp.get_chat(data)
+
+@sio.on('send_message')
+def send_message(data):
+    sp.send_message(data)
+
+@sio.on('read_message')
+def read_message(data):
+    sp.read_message(data)
+
+@sio.on('delete_chat')
+def delete_chat(data):
+    sp.delete_chat(data)
 
 if __name__ == "__main__":
     rp.reload_cities()

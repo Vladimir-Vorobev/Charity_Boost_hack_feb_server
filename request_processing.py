@@ -166,6 +166,7 @@ class request_precessing():
                 id = self.make_session_id()
                 user['projects']['now'][id] = {
                     'num': id,
+                    'user_id': data['user_id'],
                     'category': data['category'],
                     'type_help': data['type_help'],
                     'image': data['image'],
@@ -173,6 +174,8 @@ class request_precessing():
                     'title': data['title'],
                     'help': data['help'],
                     'money': data['money'],
+                    'fund': data['fund'],
+                    'chats': [],
                     'helpers': [],
                 }
                 users.update_one(
@@ -184,6 +187,7 @@ class request_precessing():
                 projects.insert_one({
                     'author': data['email'],
                     'num': id,
+                    'user_id': data['user_id'],
                     'category': data['category'],
                     'type_help': data['type_help'],
                     'image': data['image'],
@@ -191,6 +195,7 @@ class request_precessing():
                     'title': data['title'],
                     'help': data['help'],
                     'money': data['money'],
+                    'fund': data['fund'],
                 })
                 if data['city'] not in cities:
                     cities[data['city']] = 1
